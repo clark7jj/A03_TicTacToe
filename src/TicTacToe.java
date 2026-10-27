@@ -9,7 +9,8 @@ import java.util.Scanner;
 // 5) If appropriate, check for a win or tie. If there is a win or tie, announce it, then prompt the players to play again or exit.
 // 6) If not, toggle the player for the next move (X becomes O, O becomes X).
 
-public class TicTacToe {
+public class TicTacToe
+{
     // Declare constants for the board dimensions
     private static final int ROWS = 3;
     private static final int COLS = 3;
@@ -18,6 +19,55 @@ public class TicTacToe {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
+        boolean playAgain;
+
+        do {
+            // Clear the board and set X as the first player
+            clearBoard();
+            String player = "X";
+            boolean gameOver = false;
+            // Continue taking turns until there is a win or tie
+            while (!gameOver) {
+                display();
+                int row;
+                int col;
+                // Get and validate the player's move coordinates
+                do {
+                    row = SafeInput.getRangedInt(in, "Player " + player + ", enter row (1-3) :", 1, 3);
+                    col = SafeInput.getRangedInt(in, "Player " + player + ", enter column (1-3) :", 1, 3);
+                    // Convert the player's input to array indices
+                    row = row - 1;
+                    col = col - 1;
+
+                    if (!isValidMove(row, col)) {
+                        System.out.println("That space is already taken. Please try again!");
+                    }
+                } while (!isValidMove(row, col));
+                // Place the player's mark
+                board[row][col] = player;
+                // Check for a win
+                if (isWin(player)) {
+                    display();
+                    System.out.println("Player " + player + " wins!");
+                    gameOver = true;
+                }
+                // Check for a tie
+                else if (isTie()) {
+                    display();
+                    System.out.println("It's a tie!");
+                    gameOver = true;
+                } else {
+                    // Switch players
+                    if (player.equals("X")) {
+                        player = "O";
+                    } else {
+                        player = "X";
+                    }
+                }
+            }
+            // Ask if the players want to play again
+            playAgain = SafeInput.getYNConfirm(in, "Would you like to play again?");
+        } while (playAgain);
     }
 
     private static void clearBoard() // sets all the board elements to a space
@@ -40,6 +90,7 @@ public class TicTacToe {
 
     private static boolean isValidMove(int row, int col) // returns true if there is a space " " at the proposed move coordinates which means it's a legal move
     {
+
         return board[row][col].equals(" ");
     }
 
